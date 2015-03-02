@@ -1,12 +1,18 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Text;
 using System.Windows.Forms;
 using System.Configuration;
+using WhoHasTheMasterSchedule.Properties;
 using WhosGotTheMasterSchedule;
+
 
 namespace WhoHasTheMasterScheduleApp
 {
+  /// <summary>
+  /// TODO: Need to add unit tests
+  /// This is the primary class used for implementing a simple tray tool to indicate what user has locked a
+  /// file.
+  /// </summary>
   public partial class SysTrayApp : Form
   {
     private NotifyIcon _trayIcon;
@@ -32,7 +38,7 @@ namespace WhoHasTheMasterScheduleApp
       // standard system icon for simplicity, but you
       // can of course use your own custom icon too.
       _trayIcon = new NotifyIcon {Text = "Who's Got The PTP Schedule"};
-      _trayIcon.Icon = new Icon(IconPath, 40, 40);
+      SetIcon();
 
       // Add menu to tray icon and show it.
       _trayIcon.ContextMenu = _trayMenu;
@@ -58,23 +64,13 @@ namespace WhoHasTheMasterScheduleApp
       _trayIcon.ShowBalloonTip(30000);
     }
 
+
     /// <summary>
-    /// Gets or sets the icon path.
+    /// Shows the owner of the file.
     /// </summary>
-    /// <value>
-    /// The icon path.
-    /// </value>
-     public string IconPath 
-    {
-       set { }
-       get
-       {
-        return (_masterSheetOwner == null || _masterSheetOwner.Locked) ? @"C:\Users\hgilson\Pictures\Redlight.ico" : @"C:\Users\hgilson\Pictures\Greenlight.ico";        
-       }
-    }
-
-
-     private void ShowOwner(Object myObject, EventArgs myEventArgs)
+    /// <param name="myObject">My object.</param>
+    /// <param name="myEventArgs">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void ShowOwner(Object myObject, EventArgs myEventArgs)
      {
        MessageBox.Show(!_masterSheetOwner.Exists ? "File not found - no owner" : _masterSheetOwner.Owner + " has " + _masterSheetOwner.Workbook + " locked.");
      }
@@ -86,8 +82,8 @@ namespace WhoHasTheMasterScheduleApp
      /// <param name="myEventArgs">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void OnTimer(Object myObject, EventArgs myEventArgs) 
     {
-      _trayIcon.Icon = new Icon(IconPath, 40, 40);
-      _timer.Enabled = true;
+      SetIcon();
+       _timer.Enabled = true;
 
       if (_masterSheetOwner != null && 
           _masterSheetOwner.Exists && 
@@ -96,6 +92,13 @@ namespace WhoHasTheMasterScheduleApp
         SetBalloonTip();
         _oldOwner = _masterSheetOwner.Owner;
       }
+    }
+
+    private void SetIcon()
+    {
+      Icon iconForThisState = (_masterSheetOwner == null || _masterSheetOwner.Locked)
+        ? Resources.RedLight : Resources.GreenLight;
+      _trayIcon.Icon = new Icon(iconForThisState, 40, 40);
     }
 
     /// <summary>
