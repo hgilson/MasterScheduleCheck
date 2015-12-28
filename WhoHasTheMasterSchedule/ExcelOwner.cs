@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 
-
 namespace WhosGotTheMasterSchedule
 {
   /// <summary>
@@ -10,9 +9,12 @@ namespace WhosGotTheMasterSchedule
   /// </summary>
   internal class ExcelOwner
   {
-    string _fileName;
+    private readonly string _fileName;
     public const string NOT_BEING_EDITED = "No one";
-    private ExcelOwner () {}
+
+    private ExcelOwner()
+    {
+    }
 
     /// <summary>
     /// Gets or sets the workbook name.
@@ -20,25 +22,27 @@ namespace WhosGotTheMasterSchedule
     /// <value>
     /// The workbook.
     /// </value>
-    public string Workbook 
+    public string Workbook
     {
       private set { }
       get { return _fileName; }
     }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ExcelOwner"/> class.
     /// </summary>
     /// <param name="fileName">Name of the file.</param>
-    private ExcelOwner (string fileName)
+    private ExcelOwner(string fileName)
     {
       _fileName = fileName;
     }
+
     /// <summary>
     /// Only method to construct an instance.
     /// </summary>
     /// <param name="fileName">Name of the Excel file to monitor.</param>
     /// <returns></returns>
-    public static ExcelOwner Factory (String fileName)
+    public static ExcelOwner Factory(String fileName)
     {
       return String.IsNullOrEmpty(fileName) ? null : new ExcelOwner(fileName);
     }
@@ -66,8 +70,9 @@ namespace WhosGotTheMasterSchedule
       private set { }
       get { return Owner != NOT_BEING_EDITED; }
     }
+
     /// <summary>
-    /// Getsthe owner of the lock file.
+    /// Gets the owner of the lock file.
     /// </summary>
     /// <value>
     /// The owner.
@@ -84,11 +89,10 @@ namespace WhosGotTheMasterSchedule
         FileInfo info = new FileInfo(GetXlsTempFullFileName());
         try
         {
-          returnValue = info.GetAccessControl().GetOwner(typeof (System.Security.Principal.NTAccount)).ToString();
+          returnValue = info.GetAccessControl().GetOwner(typeof(System.Security.Principal.NTAccount)).ToString();
         }
         catch
         {
-          
         }
         return returnValue;
       }
@@ -98,13 +102,12 @@ namespace WhosGotTheMasterSchedule
     /// Gets the name of the xls temporary full file based on the file to monitor.
     /// </summary>
     /// <returns></returns>
-    private  string GetXlsTempFullFileName()
+    private string GetXlsTempFullFileName()
     {
       string fileName = Path.GetFileName(_fileName);
       string directory = Path.GetDirectoryName(_fileName);
       string tempFileName = "~$" + fileName;
       return Path.Combine(directory, tempFileName);
     }
-
   }
 }
